@@ -1,0 +1,219 @@
+# ============================================================
+# DragonClaw Evaluation Framework Configuration
+# ============================================================
+# This config drives run_evaluation.py — the automated
+# orchestrator for all hallucination evaluation workstreams.
+#
+# Usage:
+#   python run_evaluation.py                    # run all enabled suites
+#   python run_evaluation.py --suite ollama     # run one suite
+#   python run_evaluation.py --list             # list available suites
+# ============================================================
+
+# --- Hardware auto-detection overrides (optional) ---
+hardware:
+  max_model_ram_gb: 6.0        # leave ~2 GB for OS + Ollama overhead
+  ollama_host: "http://localhost:11434"
+  timeout_per_turn_s: 180
+
+# --- Models ---
+models:
+  primary: "qwen2.5:1.5b"
+  cascade_chain:
+    - "qwen2.5:1.5b"
+    - "llama3.2:1b"
+    - "gemma2:2b"
+    - "phi3:mini"
+  scaling:
+    - "qwen2.5:0.5b"
+    - "qwen2.5:1.5b"
+    - "qwen2.5:3b"
+    - "qwen2.5:7b"
+  fingerprint:
+    - "qwen2.5:1.5b"
+    - "llama3.2:1b"
+    - "gemma2:2b"
+    - "phi3:mini"
+
+# --- Suite registry ---
+# Each suite maps to a test file + metadata.
+# enabled: true/false — controls whether run_evaluation.py runs it.
+# requires_ollama: if true, skipped when Ollama is not available
+#   (unless force_simulated is set).
+suites:
+  vuln:
+    file: "tests/test_cascading_hallucinations.py"
+    label: "T1-T10: Vulnerability Detection"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+    diagnostic: true  # Failures are EXPECTED — confirms original vulns exist
+
+  adv:
+    file: "tests/test_cascading_hallucinations_advanced.py"
+    label: "T11-T20: Advanced Patch Verification"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+
+  val:
+    file: "tests/test_patch_validation.py"
+    label: "V1-V10: Stress / Red-Team Validation"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+
+  ms:
+    file: "tests/test_patch_validation_multistep.py"
+    label: "V11-V30: Multi-Step Chain Logic"
+    tests: 20
+    enabled: true
+    requires_ollama: false
+
+  fuzz:
+    file: "tests/test_property_fuzzing.py"
+    label: "V31-V40: Property-Based Fuzzing"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+
+  mut:
+    file: "tests/test_mutation_testing.py"
+    label: "M1-M10: Mutation Testing"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+
+  orch:
+    file: "tests/test_orchestration_hallucinations.py"
+    label: "O1-O15: Multi-Agent Orchestration"
+    tests: 15
+    enabled: true
+    requires_ollama: false
+
+  teach:
+    file: "tests/test_100turn_teach_recall.py"
+    label: "O16-O25: 100-Turn Teach→Recall"
+    tests: 10
+    enabled: true
+    requires_ollama: false
+
+  stress:
+    file: "tests/test_500turn_stress.py"
+    label: "O26-O30: 500-Turn Stress"
+    tests: 5
+    enabled: true
+    requires_ollama: false
+
+  sensitive:
+    file: "tests/test_5000turn_sensitive.py"
+    label: "O31-O35: 5000-Turn Sensitive Data"
+    tests: 5
+    enabled: true
+    requires_ollama: false
+
+  ollama:
+    file: "tests/test_ollama_live_inference.py"
+    label: "O36-O45: Ollama Live Inference"
+    tests: 10
+    enabled: true
+    requires_ollama: true
+
+  multimodel:
+    file: "tests/test_multimodel_cascade.py"
+    label: "O46-O50: Multi-Model Cascade & Scaling"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  tier2:
+    file: "tests/test_tier2_hallucination.py"
+    label: "O51-O55: Tier 2 Hallucination Analysis"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  pentest:
+    file: "tests/test_pentest_extensions.py"
+    label: "P1-P5: Pen Testing Extensions"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  pentest_adv:
+    file: "tests/test_pentest_advanced.py"
+    label: "P6-P10: Advanced Pen Testing"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  defense:
+    file: "tests/test_defense_validation.py"
+    label: "D1-D5: Defense Validation"
+    tests: 5
+    enabled: true
+    requires_ollama: false
+
+  tier3:
+    file: "tests/test_tier3_defense_aware.py"
+    label: "O56-O60: Tier 3 Defense-Aware Hallucination"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  pentest_evasion:
+    file: "tests/test_pentest_defense_evasion.py"
+    label: "P11-P15: Defense Evasion Pen Testing"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  training_loop:
+    file: "tests/test_training_loop_corruption.py"
+    label: "O61-O65: Training Loop Corruption"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  conv_memory:
+    file: "tests/test_conversation_memory.py"
+    label: "O66-O70: Conversation Memory Retrieval"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+  session_chain:
+    file: "tests/test_session_chain.py"
+    label: "O71-O75: Session Chain Auto-Spawn"
+    tests: 5
+    enabled: true
+    requires_ollama: false
+
+  session_chain_live:
+    file: "tests/test_session_chain_live.py"
+    label: "O76-O80: Session Chain Live"
+    tests: 5
+    enabled: true
+    requires_ollama: true
+
+# --- Scoring rubric ---
+scoring:
+  A: { min_pass_pct: 95, max_warns: 0, max_fails: 0, label: "Excellent — all defenses hold" }
+  B: { min_pass_pct: 85, max_warns: 5, max_fails: 0, label: "Good — minor warnings only" }
+  C: { min_pass_pct: 70, max_warns: 10, max_fails: 3, label: "Acceptable — non-critical use" }
+  D: { min_pass_pct: 50, max_warns: 99, max_fails: 10, label: "Poor — multiple failures" }
+  F: { min_pass_pct: 0, max_warns: 99, max_fails: 99, label: "Critical — defense bypass detected" }
+
+# --- Output ---
+output:
+  results_dir: "records"
+  dashboard_html: "dashboard.html"
+  report_md: "records/evaluation_report.md"
+  log_dir: "records/logs"
+
+# --- Behaviour ---
+options:
+  force_simulated: false       # force simulated mode even when Ollama is available
+  resume: true                 # skip suites that already have passing results from this run
+  verbose: true                # verbose logging with % progress
+  parallel: false              # run independent suites in parallel (experimental)

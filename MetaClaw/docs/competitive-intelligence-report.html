@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DragonClaw — Competitive Intelligence Report</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --orange: #db6d28;
+    --purple: #bc8cff;
+    --cyan: #39d2c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 32px;
+    text-align: center;
+  }
+  .header h1 { font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }
+  .header h1 span { color: var(--accent); }
+  .header .subtitle { color: var(--text-dim); font-size: 1.1em; }
+  .header .meta { color: var(--text-dim); font-size: 0.85em; margin-top: 12px; }
+
+  /* Container */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px; }
+
+  /* Executive Summary */
+  .exec-summary {
+    background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(188,140,255,0.05));
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 40px;
+  }
+  .exec-summary h2 { color: var(--accent); margin-bottom: 16px; font-size: 1.4em; }
+  .exec-summary .finding {
+    background: var(--surface);
+    border-left: 4px solid var(--green);
+    padding: 16px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 1.05em;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .tier-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tier-1 { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .tier-2 { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .tier-3 { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .tier-4 { background: rgba(248,81,73,0.15); color: var(--red); }
+  .tier-5 { background: rgba(57,210,192,0.15); color: var(--cyan); }
+  .section-header h2 { font-size: 1.5em; }
+
+  /* Question blocks */
+  .question-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .question-block .q-label {
+    color: var(--accent);
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .question-block h3 {
+    font-size: 1.2em;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9em;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(88,166,255,0.03); }
+
+  /* Status badges */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .badge-yes { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-no { background: rgba(248,81,73,0.12); color: var(--red); }
+  .badge-partial { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .badge-novel { background: rgba(188,140,255,0.2); color: var(--purple); }
+
+  /* Diagrams (ASCII-style) */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.82em;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--text-dim);
+  }
+  .diagram .highlight { color: var(--accent); font-weight: 700; }
+  .diagram .warn { color: var(--yellow); font-weight: 700; }
+  .diagram .good { color: var(--green); font-weight: 700; }
+  .diagram .bad { color: var(--red); font-weight: 700; }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.95em;
+  }
+  .callout-finding {
+    background: rgba(63,185,80,0.08);
+    border-left: 4px solid var(--green);
+  }
+  .callout-warning {
+    background: rgba(248,81,73,0.08);
+    border-left: 4px solid var(--red);
+  }
+  .callout-info {
+    background: rgba(88,166,255,0.08);
+    border-left: 4px solid var(--accent);
+  }
+
+  /* Gap Matrix */
+  .gap-matrix {
+    margin: 24px 0;
+  }
+  .gap-matrix table { font-size: 0.88em; }
+  .gap-matrix td { text-align: center; }
+  .gap-matrix td:first-child { text-align: left; font-weight: 600; }
+  .score-row td { font-weight: 700; font-size: 1.1em; border-top: 2px solid var(--border); }
+  .score-7 { color: var(--green); }
+  .score-3 { color: var(--yellow); }
+  .score-2 { color: var(--orange); }
+  .score-1 { color: var(--red); }
+
+  /* Cost chart */
+  .cost-bars { margin: 16px 0; }
+  .cost-bar-row { display: flex; align-items: center; margin: 8px 0; gap: 12px; }
+  .cost-bar-label { width: 200px; text-align: right; font-size: 0.9em; font-weight: 600; }
+  .cost-bar-track { flex: 1; height: 32px; background: var(--surface2); border-radius: 6px; position: relative; overflow: hidden; }
+  .cost-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; font-size: 0.8em; font-weight: 700; }
+  .cost-bar-value { width: 120px; font-size: 0.9em; font-weight: 600; text-align: right; }
+
+  /* Rec list */
+  .rec-list { list-style: none; padding: 0; }
+  .rec-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .rec-num {
+    background: var(--accent);
+    color: var(--bg);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  .toc h3 { color: var(--accent); margin-bottom: 12px; }
+  .toc-list { list-style: none; padding: 0; columns: 2; column-gap: 32px; }
+  .toc-list li { padding: 4px 0; }
+  .toc-list a { color: var(--text-dim); text-decoration: none; font-size: 0.9em; }
+  .toc-list a:hover { color: var(--accent); }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 32px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85em;
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 16px; }
+    .toc-list { columns: 1; }
+    .cost-bar-label { width: 120px; font-size: 0.8em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1><span>DragonClaw</span> — Competitive Intelligence Report</h1>
+  <p class="subtitle">Landscape Analysis: Conversation Memory, Defense-Gated Retrieval, Auto-Spawn Chaining</p>
+  <p class="meta">Compiled March 2026 &nbsp;|&nbsp; 14 Structured Research Questions &nbsp;|&nbsp; Source: GPT-4o Research Sweep</p>
+</div>
+
+<div class="container">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h3>Contents</h3>
+  <ul class="toc-list">
+    <li><a href="#exec">Executive Summary</a></li>
+    <li><a href="#q1">Q1: Open-Source Memory Projects</a></li>
+    <li><a href="#q2">Q2: Defense-Gated Retrieval</a></li>
+    <li><a href="#q3">Q3: Automatic Session Chaining</a></li>
+    <li><a href="#q4">Q4: Key Papers (2023-2026)</a></li>
+    <li><a href="#q5">Q5: RAG Poisoning Attacks</a></li>
+    <li><a href="#q6">Q6: Lost-in-the-Middle</a></li>
+    <li><a href="#q7">Q7: Enterprise Memory Platforms</a></li>
+    <li><a href="#q8">Q8: Local Framework Memory</a></li>
+    <li><a href="#q9">Q9: Small Model RAG Benchmarks</a></li>
+    <li><a href="#q10">Q10: Combined Architecture Novelty</a></li>
+    <li><a href="#q11">Q11: RAG Security Defenses</a></li>
+    <li><a href="#q12">Q12: Cost Comparison</a></li>
+    <li><a href="#q13">Q13: Patent Landscape</a></li>
+    <li><a href="#q14">Q14: MemGPT/Letta IP</a></li>
+    <li><a href="#gap">Gap Matrix &amp; Conclusions</a></li>
+  </ul>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="exec-summary" id="exec">
+  <h2>Executive Summary</h2>
+  <div class="callout callout-info" style="margin-bottom:16px;"><strong>Lineage:</strong> DragonClaw is a security-hardened fork of <a href="https://github.com/meta-claw/meta-claw" style="color:var(--accent);">MetaClaw</a> (v0.3). We identified and tested cascading hallucination vulnerabilities and defense gaps in the original MetaClaw, then built DragonClaw by upgrading it with a 3-tier defense stack, defense-gated conversation memory, auto-spawn session chaining, and 160 adversarial tests across 22 suites. References to "MetaClaw" in competitor comparisons refer to the original upstream project.</div>
+  <p style="margin-bottom:16px;">DragonClaw combines three architectural elements: <strong>tiered conversation memory retrieval</strong>, <strong>defense-gated fact verification on retrieved results</strong>, and <strong>automatic session chaining with context-window monitoring</strong>. This report maps the competitive landscape across open-source projects, academic papers, enterprise platforms, and patent filings.</p>
+
+  <div class="finding"><strong>Key Finding:</strong> No widely adopted system integrates all three. Individual components exist in isolation. The combination — particularly defense-gated retrieval treating stored memory as untrusted — represents a genuine architectural gap.</div>
+
+  <div class="finding" style="border-left-color:var(--purple);"><strong>Closest Competitor:</strong> TierMem (2026) — provenance-aware tiered memory with verified write-back. Gets close to (a)+(b) but lacks automatic session chaining (c).</div>
+
+  <div class="finding" style="border-left-color:var(--yellow);"><strong>Patent Landscape:</strong> Active but fragmented. No clearly identified patent claims the exact combination of defense-gated memory retrieval + auto session chaining. IP whitespace appears to exist.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TIER 1: DIRECT COMPETITORS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="q1">
+  <div class="section-header">
+    <span class="tier-badge tier-1">Tier 1</span>
+    <h2>Direct Competitors</h2>
+  </div>
+
+  <div class="question-block">
+    <div class="q-label">Question 1</div>
+    <h3>Open-Source Projects with Persistent Conversation Memory &amp; Tiered Retrieval</h3>
+
+    <table>
+      <thead>
+        <tr><th>Project</th><th>Open Source</th><th>Persistent</th><th>Retrieval Tiers</th><th>Defense Gating</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MemGPT / Letta</strong></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>T1: Core memory (in-context) → T2: Archival (on-demand) → T3: Files/external DB</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Zep / Graphiti</strong></td>
+          <td><span class="badge badge-partial">Partial</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>T1: Episodes → T2: Entity nodes → T3: Relationship edges (temporal)</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Mem0</strong></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>T1: Short-term → T2: Long-term factual/episodic/semantic → T3: Graph + vector reranking</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>LangMem</strong></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>Toolkit — hot-path + background memory creation, not opinionated tiers</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>MemOS</strong></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>Unified store/retrieve/manage with KB, tool, multimodal plugins</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>DragonClaw</strong></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td><span class="badge badge-yes">Yes</span></td>
+          <td>T1: Keyword → T2: Embedding → T3: Defense-gated FactVerifier</td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="highlight">MemGPT Architecture</span>                         <span class="highlight">DragonClaw Architecture</span>
+
+┌──────────────────────┐                ┌──────────────────────────────┐
+│   Core Memory        │                │   Tier 1: Keyword Match      │
+│   (always in-context)│                │   (instant, zero-cost)       │
+├──────────────────────┤                ├──────────────────────────────┤
+│   Working Memory     │                │   Tier 2: Embedding Search   │
+│   (recent context)   │                │   (semantic, vector-based)   │
+├──────────────────────┤                ├──────────────────────────────┤
+│   Archival Memory    │                │   Tier 3: <span class="good">Defense-Gated</span>       │
+│   (external DB)      │                │   <span class="good">FactVerifier verification</span>   │
+└──────────────────────┘                │   <span class="good">(untrusted → verified)</span>       │
+                                        └──────────────────────────────┘
+ ❌ No verification layer               ✅ Retrieved facts checked
+ ❌ Trusts all stored memory            ✅ Poison blocked before injection</div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="section" id="q2">
+  <div class="question-block">
+    <div class="q-label">Question 2</div>
+    <h3>Defense-Gated Retrieval — Does Anyone Verify Memories Before Injection?</h3>
+
+    <div class="callout callout-finding"><strong>Key Finding:</strong> The concept exists in research (MeVe, A-MemGuard, Merlin-Arthur) but <strong>no mainstream framework implements it</strong>. OWASP 2025 flags memory/context poisoning as a major agent vulnerability.</div>
+
+    <table>
+      <thead>
+        <tr><th>System</th><th>Type</th><th>What It Does</th><th>Defense Gate?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MeVe (2025)</strong></td>
+          <td>Research</td>
+          <td>Retrieval → relevance verification → fallback → context prioritization → token budgeting. 57% context reduction.</td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>A-MemGuard (2025)</strong></td>
+          <td>Research</td>
+          <td>Consensus validation (multiple reasoning paths), dual memory. &gt;95% attack reduction.</td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>Merlin-Arthur (2025)</strong></td>
+          <td>Research</td>
+          <td>Interactive proof system — model trained to accept valid / reject adversarial evidence.</td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>RePCS</strong></td>
+          <td>Research</td>
+          <td>Dual inference paths, KL divergence to detect retrieval influence.</td>
+          <td><span class="badge badge-partial">Detect only</span></td>
+        </tr>
+        <tr>
+          <td><strong>MemGPT / Zep / Mem0</strong></td>
+          <td>Production</td>
+          <td>Similarity thresholds, metadata filtering, summarization.</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="highlight">Standard RAG Pipeline</span>                       <span class="highlight">DragonClaw Defense-Gated Pipeline</span>
+
+  Retrieve top-k                          Retrieve top-k
+      │                                       │
+      ▼                                       ▼
+  <span class="bad">Inject into prompt</span>                   ┌─────────────────────┐
+  <span class="bad">(assume trusted)</span>                     │  <span class="good">FactVerifier Gate</span>    │
+      │                                  │  Check vs truth store│
+      ▼                                  │  Score confidence    │
+  Generate                               │  <span class="bad">Block poison</span>         │
+                                         └─────────┬───────────┘
+                                                   ▼
+                                           <span class="good">Inject verified only</span>
+                                                   │
+                                                   ▼
+                                               Generate</div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="section" id="q3">
+  <div class="question-block">
+    <div class="q-label">Question 3</div>
+    <h3>Automatic Session Chaining — Who Auto-Spawns New Sessions?</h3>
+
+    <table>
+      <thead>
+        <tr><th>System</th><th>Approach</th><th>Auto-Detect?</th><th>Summary Handoff?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>MemGPT / Letta</strong></td><td>Virtual context — pages memory in/out</td><td><span class="badge badge-partial">Implicit</span></td><td>Not literal new session</td></tr>
+        <tr><td><strong>Claude Code</strong></td><td>Context compaction at ~95%</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-yes">Yes</span></td></tr>
+        <tr><td><strong>Zep</strong></td><td>Auto-summarize older blocks</td><td><span class="badge badge-partial">Implicit</span></td><td><span class="badge badge-partial">Partial</span></td></tr>
+        <tr><td><strong>Terminus-2</strong></td><td>Summary → gap fill → history replace</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-yes">Yes</span></td></tr>
+        <tr><td><strong>DragonClaw</strong></td><td>TokenBudgetMonitor → SessionSummarizer → HandoffPayload → new SessionChain</td><td><span class="badge badge-yes">Yes</span></td><td><span class="badge badge-yes">Yes</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="highlight">DragonClaw Auto-Spawn Chain Architecture</span>
+
+Session 1                  Session 2                  Session 3
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│ Exchange 1      │       │ Handoff summary  │       │ Handoff summary  │
+│ Exchange 2      │       │ + loaded memory   │       │ + loaded memory   │
+│ ...             │       │ Exchange N+1     │       │ Exchange M+1     │
+│ Exchange N      │       │ Exchange N+2     │       │ ...              │
+│ <span class="warn">80% tokens used</span> │       │ <span class="warn">80% tokens used</span> │       │ Query: "capital?" │
+└────────┬────────┘       └────────┬────────┘       └────────┬────────┘
+         │                         │                         │
+    ┌────▼────┐               ┌────▼────┐               ┌────▼────┐
+    │Summarize│               │Summarize│               │ <span class="good">Retrieve</span> │
+    │ + Save  │               │ + Save  │               │ <span class="good">from ALL</span> │
+    │ Memory  │               │ Memory  │               │ <span class="good">sessions</span> │
+    └────┬────┘               └────┬────┘               └─────────┘
+         │                         │
+         ▼                         ▼
+   session_0001.json         session_0002.json     <span class="good">→ 100% recall</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TIER 2: ACADEMIC -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="q4">
+  <div class="section-header">
+    <span class="tier-badge tier-2">Tier 2</span>
+    <h2>Academic Research</h2>
+  </div>
+
+  <div class="question-block">
+    <div class="q-label">Question 4</div>
+    <h3>Key Papers on LLM Long-Term Memory (2023-2026)</h3>
+
+    <table>
+      <thead><tr><th>Year</th><th>Paper</th><th>Core Contribution</th></tr></thead>
+      <tbody>
+        <tr><td>2023</td><td><strong>MemoryBank</strong></td><td>First persistent memory store for conversational LLMs. Memory extraction + periodic updates.</td></tr>
+        <tr><td>2023</td><td><strong>LongMem</strong> (NeurIPS)</td><td>Decoupled memory module from base LLM. Separate memory encoder + retriever network.</td></tr>
+        <tr><td>2023</td><td><strong>MemGPT</strong></td><td>Virtual context management — context as RAM, external storage as disk. Most cited architecture.</td></tr>
+        <tr><td>2023</td><td><strong>Think-in-Memory</strong></td><td>Iterative recall loops — multi-step memory reasoning instead of single retrieval.</td></tr>
+        <tr><td>2023</td><td><strong>Lost in the Middle</strong> (Stanford)</td><td>LLMs fail to retrieve info from middle of long contexts. 40%+ accuracy drop. Foundational motivation for RAG.</td></tr>
+        <tr><td>2025</td><td><strong>LOCCO</strong></td><td>Benchmark dataset for measuring long-term memory. Confirmed memory decays over time.</td></tr>
+        <tr><td>2025</td><td><strong>Mnemosyne</strong></td><td>Human-inspired cognitive memory: graph-structured, temporal decay, probabilistic recall.</td></tr>
+        <tr><td>2025</td><td><strong>IMDMR</strong></td><td>Multi-dimensional retrieval across semantic, entity, intent, temporal, category, context axes.</td></tr>
+        <tr><td>2026</td><td><strong>TierMem</strong></td><td>Provenance-aware tiered memory with verified write-back. Closest to defense-gated retrieval.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="highlight">Academic Lineage</span>
+
+2023 ──┬── MemoryBank          (persistent store)
+       ├── LongMem             (decoupled memory)
+       ├── MemGPT              (virtual context / OS model)
+       ├── Think-in-Memory     (iterative recall)
+       └── Lost in the Middle  (recall degradation proof)
+            │
+2024 ──────┤── Surveys + benchmarks
+            │
+2025 ──┬── LOCCO               (long-term memory benchmark)
+       ├── Mnemosyne           (cognitive memory)
+       ├── IMDMR               (multi-dimensional retrieval)
+       ├── MeVe                (memory verification)
+       └── A-MemGuard          (poison defense)
+            │
+2026 ──┬── TierMem             (provenance-aware + verified write-back)
+       └── <span class="good">DragonClaw</span>            <span class="good">(tiered + defense-gated + auto-chain)</span></div>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="section" id="q5">
+  <div class="question-block">
+    <div class="q-label">Question 5</div>
+    <h3>RAG Poisoning Attacks — The Threat Landscape</h3>
+
+    <div class="callout callout-warning"><strong>Critical Finding:</strong> PoisonedRAG (2024) achieved <strong>90% attack success</strong> with just 5 malicious texts per target in a corpus of millions. Most production RAG systems have no defense.</div>
+
+    <table>
+      <thead><tr><th>Attack Type</th><th>Method</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Corpus Poisoning</strong></td><td>Inject malicious documents into vector store</td><td>90% attack success rate (PoisonedRAG)</td></tr>
+        <tr><td><strong>Embedding Manipulation</strong></td><td>Craft docs with high cosine similarity traps</td><td>Poisoned docs appear "extremely relevant"</td></tr>
+        <tr><td><strong>Memory Poisoning</strong></td><td>Inject false info in conversations; stored in persistent memory</td><td>Especially effective against self-learning agents</td></tr>
+        <tr><td><strong>Retrieval Prompt Injection</strong></td><td>Documents with hidden instructions</td><td>Model may obey instructions from retrieved docs</td></tr>
+        <tr><td><strong>Backdoor Attacks</strong></td><td>Trigger phrases activate attacker responses</td><td>Similar to neural backdoors in vision</td></tr>
+        <tr><td><strong>Data Exfiltration</strong></td><td>Poisoned docs instruct model to leak data</td><td>Retrieved context becomes attack vector</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="bad">RAG Poisoning Attack Flow</span>
+
+  Attacker                     Vector Store                 User
+    │                              │                          │
+    │  <span class="bad">inject malicious doc</span>        │                          │
+    │─────────────────────────────▶│                          │
+    │                              │                          │
+    │                              │     user query           │
+    │                              │◀─────────────────────────│
+    │                              │                          │
+    │                              │  <span class="bad">retrieve poisoned doc</span>   │
+    │                              │─────────────────────────▶│
+    │                              │                          │
+    │                              │          <span class="bad">LLM trusts it</span>   │
+    │                              │          <span class="bad">outputs poison</span>  │
+    │                              │                          │
+
+  <span class="good">DragonClaw Defense:</span>
+    │                              │  retrieve candidate      │
+    │                              │─────────────────────────▶│
+    │                              │                          │
+    │                              │    ┌──────────────┐      │
+    │                              │    │ <span class="good">FactVerifier</span>  │      │
+    │                              │    │ <span class="good">checks truth</span>  │      │
+    │                              │    │ <span class="bad">BLOCKS poison</span> │      │
+    │                              │    └──────────────┘      │</div>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="section" id="q6">
+  <div class="question-block">
+    <div class="q-label">Question 6</div>
+    <h3>Lost-in-the-Middle — Why Big Context Windows Don't Solve Recall</h3>
+
+    <p style="margin-bottom:12px;"><strong>Paper:</strong> "Lost in the Middle: How Language Models Use Long Contexts" (Stanford, 2023)</p>
+
+    <div class="diagram"><span class="highlight">Recall Accuracy by Position in Context</span>
+
+  100% ─┬─ ██████                                    ██████
+        │  ██████                                    ██████
+   80% ─┤  ██████                                    ██████
+        │  ██████                                    ██████
+   60% ─┤  ██████    ░░░░░░                          ██████
+        │  ██████    ░░░░░░    <span class="bad">░░░░░░</span>                ██████
+   40% ─┤  ██████    ░░░░░░    <span class="bad">░░░░░░</span>    ░░░░░░      ██████
+        │  ██████    ░░░░░░    <span class="bad">░░░░░░</span>    ░░░░░░      ██████
+   20% ─┤  ██████    ░░░░░░    <span class="bad">░░░░░░</span>    ░░░░░░      ██████
+        │  ██████    ░░░░░░    <span class="bad">░░░░░░</span>    ░░░░░░      ██████
+    0% ─┴──────────────────────────────────────────────────
+        Beginning   Early-Mid  <span class="bad">MIDDLE</span>    Late-Mid    End
+
+  <span class="bad">40%+ accuracy drop</span> for information in the middle of context.
+  Confirmed across: GPT-4, Claude, LLaMA, Mistral, 128K-1M windows.
+
+  <span class="good">DragonClaw solution:</span> Don't put the needle in a haystack.
+  Retrieve it directly and hand it to the model.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TIER 3: ENTERPRISE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="q7">
+  <div class="section-header">
+    <span class="tier-badge tier-3">Tier 3</span>
+    <h2>Enterprise &amp; Local Landscape</h2>
+  </div>
+
+  <div class="question-block">
+    <div class="q-label">Question 7</div>
+    <h3>Enterprise AI Platforms — Built-in Persistent Memory?</h3>
+
+    <table>
+      <thead><tr><th>Platform</th><th>Built-in Memory?</th><th>What They Provide</th><th>Local?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cohere</strong></td><td><span class="badge badge-no">No</span></td><td>Embeddings, reranking, RAG tooling</td><td><span class="badge badge-yes">Enterprise</span></td></tr>
+        <tr><td><strong>AI21 Labs</strong></td><td><span class="badge badge-no">No</span></td><td>Long-context models, doc processing</td><td><span class="badge badge-yes">Private cloud</span></td></tr>
+        <tr><td><strong>Together AI</strong></td><td><span class="badge badge-no">No</span></td><td>OSS model hosting, inference, fine-tuning</td><td><span class="badge badge-yes">OSS models</span></td></tr>
+        <tr><td><strong>Fireworks AI</strong></td><td><span class="badge badge-no">No</span></td><td>Optimized inference, high-throughput</td><td><span class="badge badge-yes">Self-hosted</span></td></tr>
+        <tr><td><strong>OpenAI</strong></td><td><span class="badge badge-partial">Shallow</span></td><td>Key-value preferences in ChatGPT (not semantic)</td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>Anthropic</strong></td><td><span class="badge badge-no">No</span></td><td>200K context window</td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>Google Gemini</strong></td><td><span class="badge badge-partial">Product only</span></td><td>1M+ context, workspace integration</td><td><span class="badge badge-no">No</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info"><strong>Key Finding:</strong> No major enterprise LLM provider offers built-in persistent conversation memory. Memory is always implemented at the application layer.</div>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="section" id="q8">
+  <div class="question-block">
+    <div class="q-label">Question 8</div>
+    <h3>Local Frameworks — Built-in Memory?</h3>
+
+    <table>
+      <thead><tr><th>Framework</th><th>Purpose</th><th>Persistent Memory?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ollama</strong></td><td>Local model runtime + API</td><td><span class="badge badge-no">No — stateless</span></td></tr>
+        <tr><td><strong>llama.cpp</strong></td><td>High-perf CPU/GPU inference</td><td><span class="badge badge-no">No — accepts prompt, returns tokens</span></td></tr>
+        <tr><td><strong>vLLM</strong></td><td>High-throughput inference engine</td><td><span class="badge badge-no">No — stateless between requests</span></td></tr>
+        <tr><td><strong>HuggingFace TGI</strong></td><td>Production inference server</td><td><span class="badge badge-no">No — stateless</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram"><span class="highlight">Where DragonClaw Fits in the Local Stack</span>
+
+  ┌─────────────────────────────────────────────┐
+  │           Application / Chat UI             │
+  ├─────────────────────────────────────────────┤
+  │  <span class="good">DragonClaw Layer</span>                              │
+  │  ┌───────────┬──────────┬─────────────────┐ │
+  │  │ Tiered    │ Defense  │ Session Chain   │ │
+  │  │ Retrieval │ Gating   │ Auto-Spawn     │ │
+  │  └───────────┴──────────┴─────────────────┘ │
+  ├─────────────────────────────────────────────┤
+  │  Inference Engine                           │
+  │  (Ollama / llama.cpp / vLLM)                │
+  │  ← <span class="warn">stateless, no memory</span>                    │
+  └─────────────────────────────────────────────┘
+
+  All major local engines are stateless.
+  DragonClaw provides the missing memory layer.</div>
+  </div>
+</div>
+
+<!-- Q9 -->
+<div class="section" id="q9">
+  <div class="question-block">
+    <div class="q-label">Question 9</div>
+    <h3>Small Model RAG (1B-7B) — State of the Art</h3>
+
+    <p><strong>Key benchmarks:</strong> RAGBench (100K examples), LaRA (2025), RAG vs LC comparison papers</p>
+
+    <table>
+      <thead><tr><th>Finding</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Gemma3-1B + RAG</td><td>Weak few-shot → <strong>85.28%</strong> with RAG (log classification)</td></tr>
+        <tr><td>Qwen3-0.6B + RAG</td><td>Reached <strong>88.12%</strong> with RAG on same benchmark</td></tr>
+        <tr><td>RAG vs Long Context</td><td>No universal winner — depends on model size, task, chunk quality</td></tr>
+        <tr><td>RAG can hurt</td><td>Some small reasoning models perform <em>worse</em> with RAG (poor evidence integration)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info"><strong>No canonical benchmark exists</strong> for "local 1B-7B RAG recall vs cloud large-model raw context." This is an opportunity for DragonClaw to define the standard.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TIER 4: DIFFERENTIATOR -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="q10">
+  <div class="section-header">
+    <span class="tier-badge tier-4">Tier 4</span>
+    <h2>Differentiator Analysis</h2>
+  </div>
+
+  <div class="question-block">
+    <div class="q-label">Question 10 — CRITICAL</div>
+    <h3>Has Anyone Combined All Three? Tiered Memory + Defense Gating + Auto Session Chain</h3>
+
+    <div class="callout callout-finding" style="font-size:1.1em;"><strong>Answer: No.</strong> No widely recognized published system fully integrates all three as its core architecture.</div>
+
+    <table>
+      <thead><tr><th>System</th><th>Tiered Memory</th><th>Defense Gating</th><th>Auto Chain</th><th>Combined?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MemGPT / Letta</strong></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-partial">~partial</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>Zep / Graphiti</strong></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-partial">~partial</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>Mem0</strong></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>MeVe (2025)</strong></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>A-MemGuard</strong></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>Claude Code</strong></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr><td><strong>TierMem (2026)</strong></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-partial">~provenance</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">No</span></td></tr>
+        <tr style="background:rgba(63,185,80,0.08);"><td><strong>DragonClaw</strong></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-novel">NOVEL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Q11 -->
+<div class="section" id="q11">
+  <div class="question-block">
+    <div class="q-label">Question 11</div>
+    <h3>RAG Security — Current Defense Landscape</h3>
+
+    <table>
+      <thead><tr><th>Defense</th><th>Description</th><th>Maturity</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ingestion Controls</strong></td><td>Source allowlists, provenance, quarantine</td><td><span class="badge badge-partial">Basic</span></td></tr>
+        <tr><td><strong>Trust Scoring</strong></td><td>Metadata filters, source reputation, temporal weighting</td><td><span class="badge badge-partial">Emerging</span></td></tr>
+        <tr><td><strong>Multi-stage Retrieval</strong></td><td>Retrieve → rerank → drop contradictory</td><td><span class="badge badge-yes">Common</span></td></tr>
+        <tr><td><strong>Skeptical Prompting</strong></td><td>Prompt model to treat retrieved content as possibly wrong</td><td><span class="badge badge-partial">Model-dependent</span></td></tr>
+        <tr><td><strong>RevPRAG Detection</strong></td><td>Analyze activations to detect poisoned responses (98% TPR)</td><td><span class="badge badge-partial">Research</span></td></tr>
+        <tr><td><strong>Monitoring</strong></td><td>Input validation, adversarial training, real-time monitoring</td><td><span class="badge badge-partial">Recommended</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning"><strong>Gap:</strong> Most production RAG still uses "trust but lightly filter" — not zero-trust for memory. PoisonedRAG proved this is brittle.</div>
+  </div>
+</div>
+
+<!-- Q12 -->
+<div class="section" id="q12">
+  <div class="question-block">
+    <div class="q-label">Question 12</div>
+    <h3>Cost Comparison — 500-Turn Session</h3>
+
+    <div class="cost-bars">
+      <div class="cost-bar-row">
+        <div class="cost-bar-label">GPT-4o Full Context</div>
+        <div class="cost-bar-track"><div class="cost-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--red),#ff6b6b);">$120-$150</div></div>
+      </div>
+      <div class="cost-bar-row">
+        <div class="cost-bar-label">Gemini 1M Window</div>
+        <div class="cost-bar-track"><div class="cost-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--orange),#e8944a);">$120-$200</div></div>
+      </div>
+      <div class="cost-bar-row">
+        <div class="cost-bar-label">Cloud RAG</div>
+        <div class="cost-bar-track"><div class="cost-bar-fill" style="width:3%;background:linear-gradient(90deg,var(--yellow),#e8c44a);min-width:90px;">$2-$4</div></div>
+      </div>
+      <div class="cost-bar-row">
+        <div class="cost-bar-label" style="color:var(--green);">Local + Memory</div>
+        <div class="cost-bar-track"><div class="cost-bar-fill" style="width:1%;background:linear-gradient(90deg,var(--green),#5eda78);min-width:100px;">$0.02-$0.10</div></div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Architecture</th><th>Cost / Session</th><th>Relative</th><th>At 100K sessions/day</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-4o full context</td><td>~$120-$150</td><td>1x</td><td>$12-15M/day</td></tr>
+        <tr><td>Gemini 1M window</td><td>~$120-$200</td><td>~1x</td><td>$12-20M/day</td></tr>
+        <tr><td>Cloud RAG</td><td>~$2-$4</td><td>~50x cheaper</td><td>$200-400K/day</td></tr>
+        <tr style="background:rgba(63,185,80,0.08);"><td><strong>Local + persistent memory</strong></td><td><strong>~$0.02-$0.10</strong></td><td><strong>~1,000x cheaper</strong></td><td><strong>$2-10K/day</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TIER 5: PATENTS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="q13">
+  <div class="section-header">
+    <span class="tier-badge tier-5">Tier 5</span>
+    <h2>Patent &amp; IP Landscape</h2>
+  </div>
+
+  <div class="question-block">
+    <div class="q-label">Question 13</div>
+    <h3>Patents on Defense-Gated Memory / Session Chaining</h3>
+
+    <table>
+      <thead><tr><th>Patent</th><th>Title</th><th>Relevance to DragonClaw</th></tr></thead>
+      <tbody>
+        <tr><td>WO2025128894A1</td><td>Large language model verification</td><td>LLM response verification — adjacent to defense gating</td></tr>
+        <tr><td>US20250307290A1</td><td>Generating response based on previous conversation content</td><td>Prior-conversation retrieval via vector DB</td></tr>
+        <tr><td>US11876758B1</td><td>Memory-enabled dialogue system control structure</td><td>Older conversational memory patent</td></tr>
+        <tr><td>US20260010712A1</td><td>Context provisioning system for LLM</td><td>Context assembly/orchestration</td></tr>
+        <tr><td>US12517919B2</td><td>Contextual Orchestration and Scoped Memory Protocol</td><td>Memory/context management</td></tr>
+        <tr><td>US20240346255A1</td><td>Contextual knowledge summarization with LLMs</td><td>Summary generation — adjacent to handoff</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-finding"><strong>Key Finding:</strong> No clearly identified patent specifically claims the combination of defense-gated memory retrieval + automatic session chaining with summary handoff. The IP space is <strong>active but fragmented</strong> — filings cover adjacent mechanisms but not the exact combination.</div>
+  </div>
+</div>
+
+<!-- Q14 -->
+<div class="section" id="q14">
+  <div class="question-block">
+    <div class="q-label">Question 14</div>
+    <h3>MemGPT/Letta IP Position</h3>
+
+    <p>No clearly identifiable public patent filing from MemGPT/Letta claiming the "virtual context management" approach was found. Letta appears <strong>more visible as a research/framework brand than as a patent-holder</strong>.</p>
+
+    <p style="margin-top:12px;">The broader IP landscape around persistent LLM conversation memory is <strong>expanding but fragmented</strong>, with filings across prior-conversation retrieval, context provisioning, personalized dialogue, and assistant memory orchestration.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- GAP MATRIX & CONCLUSIONS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section" id="gap">
+  <div class="section-header">
+    <span class="tier-badge" style="background:rgba(63,185,80,0.15);color:var(--green);">Final</span>
+    <h2>Gap Matrix &amp; Strategic Conclusions</h2>
+  </div>
+
+  <div class="gap-matrix">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>MemGPT</th>
+          <th>Zep</th>
+          <th>Mem0</th>
+          <th>MeVe</th>
+          <th>TierMem</th>
+          <th style="color:var(--green);">DragonClaw</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Persistent Memory</td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Tiered Retrieval</td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Defense Gating</td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td><td><span class="badge badge-partial">~</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Auto Session Chain</td><td><span class="badge badge-partial">~</span></td><td><span class="badge badge-partial">~</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Local-First (Zero Cost)</td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-partial">~</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Adversarial Testing</td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr><td>Tested w/ Poison Propagation</td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-yes">✅</span></td></tr>
+        <tr class="score-row">
+          <td>Score</td>
+          <td class="score-3">3/7</td>
+          <td class="score-3">3/7</td>
+          <td class="score-2">2/7</td>
+          <td class="score-1">1/7</td>
+          <td class="score-2">2/7</td>
+          <td class="score-7">7/7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin:24px 0 16px;">Recommended Actions</h3>
+  <ul class="rec-list">
+    <li><span class="rec-num">1</span><div><strong>Publish the defense-gated retrieval architecture.</strong> This is the strongest novel claim. No mainstream framework implements it. MeVe and A-MemGuard validate the concept academically — DragonClaw validates it with production test data.</div></li>
+    <li><span class="rec-num">2</span><div><strong>Benchmark against MemGPT/Mem0/Zep</strong> on recall, cost, and poison resistance. No canonical benchmark exists for adversarial memory recall across sessions — define the standard.</div></li>
+    <li><span class="rec-num">3</span><div><strong>File provisional patent</strong> on the combined three-part architecture if IP protection is desired. The IP landscape is fragmented with no clear incumbent claim on the combination.</div></li>
+    <li><span class="rec-num">4</span><div><strong>Build FactVerifier V2</strong> (embedding-based) to close the O79 keyword-matching gap. Current V1 is vulnerable to paraphrase attacks where poison text contains truth aliases.</div></li>
+    <li><span class="rec-num">5</span><div><strong>Create a public adversarial memory benchmark.</strong> No canonical benchmark exists for RAG memory poisoning across sessions. 160 tests with poison propagation data is a strong foundation.</div></li>
+  </ul>
+
+  <div class="callout callout-finding" style="margin-top:24px; font-size:1.05em;">
+    <strong>Bottom Line:</strong> The three ingredients (tiered retrieval, defense gating, auto session chain) exist individually across the ecosystem. Nobody has integrated all three — especially not on local models at zero API cost with adversarial test data proving the architecture works. That gap is real, documented, and strategically meaningful.
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>DragonClaw Competitive Intelligence Report — March 2026</p>
+  <p>Source: 14 structured research questions via GPT-4o &nbsp;|&nbsp; 160 tests across 22 suites &nbsp;|&nbsp; Commit: 8e5b822</p>
+  <p style="margin-top:8px;color:#484f58;">This is a landscape analysis, not legal advice. Patent findings require professional review.</p>
+</div>
+
+</body>
+</html>

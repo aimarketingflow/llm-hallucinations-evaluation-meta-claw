@@ -1,0 +1,425 @@
+<div align="center">
+
+<img src="new_logo.png" alt="DragonClaw" width="600">
+
+<br/>
+
+# Habla con tu agente — aprende y *EVOLUCIONA*.
+
+<p>Inspirado en cómo aprende el cerebro. Meta-aprende y evoluciona tu 🦞 con cada conversación. Sin GPU. Compatible con Kimi, Qwen, Claude, MiniMax y más.</p>
+
+⚡ Supported LLM Providers & Platforms
+
+<table>
+<tr>
+<td align="center" width="100">
+  <a href="https://kimi.ai">
+    <img src="https://github.com/MoonshotAI.png?size=200" width="48" height="48" alt="Kimi" />
+  </a><br/>
+  <sub><a href="https://kimi.ai"><b>Kimi</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://qwen.ai">
+    <img src="https://github.com/QwenLM.png?size=200" width="48" height="48" alt="Qwen" />
+  </a><br/>
+  <sub><a href="https://qwen.ai"><b>Qwen</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://www.anthropic.com/claude">
+    <img src="https://cdn.simpleicons.org/claude/D97757" width="48" height="48" alt="Claude" />
+  </a><br/>
+  <sub><a href="https://www.anthropic.com/claude"><b>Claude</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://www.minimax.io">
+    <img src="https://github.com/minimax-ai.png?size=200" width="48" height="48" alt="MiniMax" />
+  </a><br/>
+  <sub><a href="https://www.minimax.io"><b>MiniMax</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://openai.com">
+    <img src="https://github.com/openai.png?size=200" width="48" height="48" alt="OpenAI" />
+  </a><br/>
+  <sub><a href="https://openai.com"><b>OpenAI</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://gemini.google.com">
+    <img src="https://cdn.simpleicons.org/googlegemini/8E75B2" width="48" height="48" alt="Gemini" />
+  </a><br/>
+  <sub><a href="https://gemini.google.com"><b>Gemini</b></a></sub>
+</td>
+<td align="center" width="100">
+  <sub><b>+ Much<br/>More</b></sub>
+</td>
+</tr>
+</table>
+
+🧬 RL Training Backends for Weight Evolution
+
+<table>
+<tr>
+<td align="center" width="100">
+  <a href="https://www.thinkingmachines.ai/tinker/">
+    <img src="tinker.jpg" width="48" height="48" alt="Tinker" />
+  </a><br/>
+  <sub><a href="https://www.thinkingmachines.ai/tinker/"><b>Tinker</b></a></sub>
+</td>
+<td align="center" width="100">
+  <a href="https://github.com/MindLab-Research/mindlab-toolkit">
+    <img src="https://github.com/MindLab-Research.png?size=200" width="48" height="48" alt="MinT" />
+  </a><br/>
+  <sub><a href="https://github.com/MindLab-Research/mindlab-toolkit"><b>MinT</b></a></sub>
+</td>
+<td align="center" width="100">
+  <sub><b>More<br/>Coming</b></sub>
+</td>
+</tr>
+</table>
+
+<p>
+  <a href="https://github.com/aiming-lab/DragonClaw"><img src="https://img.shields.io/badge/github-DragonClaw-181717?style=flat&labelColor=555&logo=github&logoColor=white" alt="GitHub"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat&labelColor=555" alt="License MIT"></a>
+  <img src="https://img.shields.io/badge/⚡_Totalmente_Asíncrono-yellow?style=flat&labelColor=555" alt="Fully Async" />
+  <img src="https://img.shields.io/badge/☁️_Sin_cluster_GPU-blue?style=flat&labelColor=555" alt="No GPU Cluster" />
+  <img src="https://img.shields.io/badge/🛠️_Evolución_de_skills-orange?style=flat&labelColor=555" alt="Skill Evolution" />
+  <img src="https://img.shields.io/badge/🚀_Despliegue_en_un_clic-green?style=flat&labelColor=555" alt="One-Click Deploy" />
+</p>
+
+<br/>
+
+[🇺🇸 English](../README.md) • [🇨🇳 中文](./README_ZH.md) • [🇯🇵 日本語](./README_JA.md) • [🇰🇷 한국어](./README_KO.md) • [🇫🇷 Français](./README_FR.md) • [🇩🇪 Deutsch](./README_DE.md) • [🇧🇷 Português](./README_PT.md) • [🇷🇺 Русский](./README_RU.md) • [🇮🇹 Italiano](./README_IT.md) • [🇻🇳 Tiếng Việt](./README_VI.md) • [🇦🇪 العربية](./README_AR.md) • [🇮🇳 हिन्दी](./README_HI.md)
+
+<br/>
+
+[Descripcion](#-descripción) • [Inicio rapido](#-inicio-rápido) • [Configuracion](#️-configuración) • [Modo Skills](#-modo-skills) • [Modo RL](#-modo-rl) • [Modo MadMax](#-modo-madmax-por-defecto) • [Cita](#-cita)
+
+</div>
+
+---
+
+<div align="center">
+
+### Dos comandos. Eso es todo.
+</div>
+
+```bash
+dragonclaw setup              # asistente de configuración inicial
+dragonclaw start              # por defecto: modo MadMax, skills + entrenamiento RL programado
+dragonclaw start --mode rl    # RL sin planificador (entrena inmediatamente al llenar batch)
+dragonclaw start --mode skills_only  # solo skills, sin RL (no requiere Tinker)
+```
+
+<div align="center">
+<img src="dragonclaw.gif" alt="DragonClaw demo" width="700">
+</div>
+
+---
+
+## 🔥 Noticias
+
+- **[13/03/2026]** **v0.3.1** Soporte de backend MinT: el entrenamiento RL ahora funciona con Tinker y MinT. Configurable via `rl.backend` (auto/tinker/mint).
+- **[13/03/2026]** **v0.3** Soporte de meta-aprendizaje continuo: las actualizaciones RL solo se ejecutan durante horas de sueño, periodos de inactividad o reuniones de Google Calendar. Se agrega separación de conjuntos support/query para evitar que señales de recompensa obsoletas contaminen las actualizaciones del modelo.
+- **[11/03/2026]** **v0.2** Despliegue en un clic mediante la CLI `dragonclaw`. Skills activados por defecto, RL ahora es opcional.
+- **[09/03/2026]** Lanzamos **DragonClaw**. Habla con tu agente y deja que evolucione automáticamente. **Sin** necesidad de despliegue de GPU; conéctate directamente a la **API**.
+
+---
+
+## 🎥 Demo
+
+https://github.com/user-attachments/assets/d86a41a8-4181-4e3a-af0e-dc453a6b8594
+
+---
+
+## 📖 Descripción
+
+**DragonClaw es un agente que meta-aprende y evoluciona en entornos reales.**
+Habla con tu agente como de costumbre. DragonClaw convierte cada conversación en vivo en una señal de aprendizaje, permitiendo que el agente mejore continuamente a través del despliegue real en lugar de depender únicamente del entrenamiento offline.
+
+Internamente, envuelve tu modelo detrás de un proxy compatible con OpenAI, intercepta interacciones desde OpenClaw, inyecta skills relevantes en cada turno y meta-aprende de la experiencia acumulada. Las skills se resumen automáticamente tras cada sesión; con RL activado, un planificador de meta-aprendizaje posterga las actualizaciones de pesos a ventanas de inactividad para no interrumpir al agente durante el uso activo.
+
+No se necesita cluster GPU. DragonClaw funciona con cualquier API de LLM compatible con OpenAI y usa un backend compatible con Tinker para entrenamiento LoRA en la nube. [Tinker](https://www.thinkingmachines.ai/tinker/) es la ruta de referencia por defecto; si hace falta, MinT puede habilitarse mediante un paquete de compatibilidad separado.
+
+## 🤖 Características principales
+
+### **Despliegue en un clic**
+Configura una vez con `dragonclaw setup`, luego `dragonclaw start` levanta el proxy, inyecta skills y conecta OpenClaw automáticamente. Sin necesidad de scripts de shell manuales.
+
+### **Tres modos de operación**
+
+| Modo | Por defecto | Función |
+|------|------------|---------|
+| `skills_only` | | Proxy para tu API LLM. Skills inyectados, resumidos automáticamente tras cada sesión. Sin GPU/Tinker requerido. |
+| `rl` | | Skills + entrenamiento RL (GRPO). Entrena inmediatamente cuando un batch está lleno. OPD opcional para destilación de profesor. |
+| `madmax` | ✅ | Skills + RL + planificador inteligente. Actualizaciones de pesos RL solo durante ventanas de sueño/inactividad/reunión. |
+
+### **Asíncrono por diseño**
+El serving, el modelado de recompensas y el entrenamiento están completamente desacoplados. El agente continúa respondiendo mientras el scoring y la optimización se ejecutan en paralelo.
+
+---
+
+## 🚀 Inicio rápido
+
+### 1. Instalación
+
+```bash
+pip install -e .                        # modo skills_only (ligero)
+pip install -e ".[rl]"                  # + soporte de entrenamiento RL (torch, transformers, tinker)
+pip install -e ".[evolve]"              # + evolución de skills via LLM compatible con OpenAI
+pip install -e ".[scheduler]"           # + integración Google Calendar para planificador
+pip install -e ".[rl,evolve,scheduler]" # recomendado: configuración completa RL + planificador
+```
+
+Si quieres usar `rl.backend=mint`, instala el paquete de compatibilidad de MinT por separado en el mismo entorno, por ejemplo [`mindlab-toolkit`](https://github.com/MindLab-Research/mindlab-toolkit). DragonClaw mantiene esa dependencia fuera del paquete por defecto para que los usuarios de RL elijan explícitamente entre Tinker y MinT.
+
+### 2. Configuración
+
+```bash
+dragonclaw setup
+```
+
+El asistente interactivo te pedirá que elijas tu proveedor de LLM (Kimi, Qwen, MiniMax o personalizado), tu clave API y si deseas activar el entrenamiento RL.
+
+La ruta RL de DragonClaw puede cambiar explícitamente entre `tinker` y `mint`. `auto` es el valor recomendado y seguirá infiriendo MinT a partir de credenciales o base URLs estilo Mint cuando el paquete de MinT esté instalado.
+
+**Tinker** (por defecto):
+
+```bash
+dragonclaw config rl.backend tinker
+dragonclaw config rl.api_key sk-...
+dragonclaw config rl.model moonshotai/Kimi-K2.5
+```
+
+**MinT**:
+
+```bash
+dragonclaw config rl.backend mint
+dragonclaw config rl.api_key sk-mint-...
+dragonclaw config rl.base_url https://mint.macaron.xin/
+dragonclaw config rl.model Qwen/Qwen3-4B-Instruct-2507
+```
+
+Los alias heredados `rl.tinker_api_key` y `rl.tinker_base_url` siguen siendo válidos por compatibilidad.
+
+### 3. Inicio
+
+```bash
+dragonclaw start
+```
+
+Eso es todo. DragonClaw inicia el proxy, configura automáticamente OpenClaw y reinicia la pasarela. Abre OpenClaw y empieza a chatear. Los skills se inyectan en cada turno, y la sesión se resume automáticamente en nuevos skills cuando terminas.
+
+---
+
+## ⚙️ Configuración
+
+La configuración se encuentra en `~/.dragonclaw/config.yaml`, creada por `dragonclaw setup`.
+
+**Comandos CLI:**
+
+```
+dragonclaw setup                  # Asistente de configuración inicial interactivo
+dragonclaw start                  # Iniciar DragonClaw (por defecto: modo MadMax)
+dragonclaw start --mode rl        # Forzar modo RL para esta sesión (sin planificador)
+dragonclaw start --mode skills_only  # Forzar modo solo skills para esta sesión
+dragonclaw stop                   # Detener una instancia de DragonClaw en ejecución
+dragonclaw status                 # Verificar estado del proxy, modo en ejecución y planificador
+dragonclaw config show            # Ver configuración actual
+dragonclaw config KEY VALUE       # Establecer un valor de configuración
+```
+
+<details>
+<summary><b>Referencia completa de configuración (clic para expandir)</b></summary>
+
+```yaml
+mode: madmax               # "madmax" | "rl" | "skills_only"
+
+llm:
+  provider: kimi            # kimi | qwen | openai | minimax | custom
+  model_id: moonshotai/Kimi-K2.5
+  api_base: https://api.moonshot.cn/v1
+  api_key: sk-...
+
+proxy:
+  port: 30000
+  api_key: ""              # bearer token opcional para el proxy local de DragonClaw
+
+skills:
+  enabled: true
+  dir: ~/.dragonclaw/skills   # tu biblioteca de skills
+  retrieval_mode: template  # template | embedding
+  top_k: 6
+  task_specific_top_k: 10   # límite de skills específicos de tarea (por defecto 10)
+  auto_evolve: true         # resumir skills automáticamente tras cada sesión
+
+rl:
+  enabled: false            # poner a true para activar entrenamiento RL
+  backend: auto             # "auto" | "tinker" | "mint"
+  model: moonshotai/Kimi-K2.5
+  api_key: ""
+  base_url: ""              # endpoint opcional del backend, p. ej. https://mint.macaron.xin/ para MinT
+  tinker_api_key: ""        # alias heredado de api_key
+  tinker_base_url: ""       # alias heredado de base_url
+  prm_url: https://api.openai.com/v1
+  prm_model: gpt-5.2
+  prm_api_key: ""
+  lora_rank: 32
+  batch_size: 4
+  resume_from_ckpt: ""      # ruta de checkpoint opcional para reanudar entrenamiento
+  evolver_api_base: ""      # dejar vacío para reutilizar llm.api_base
+  evolver_api_key: ""
+  evolver_model: gpt-5.2
+
+opd:
+  enabled: false            # poner a true para activar OPD (destilación profesor)
+  teacher_url: ""           # URL base del modelo profesor (OpenAI-compatible /v1/completions)
+  teacher_model: ""         # nombre del modelo profesor (p. ej. Qwen/Qwen3-32B)
+  teacher_api_key: ""       # clave API del modelo profesor
+  kl_penalty_coef: 1.0      # coeficiente de penalización KL para OPD
+
+max_context_tokens: 20000   # límite de tokens de prompt antes del truncamiento
+
+scheduler:                  # v0.3: planificador de meta-aprendizaje (auto-habilitado en modo MadMax)
+  enabled: false            # modo MadMax lo habilita automáticamente; configurar manualmente para RL
+  sleep_start: "23:00"
+  sleep_end: "07:00"
+  idle_threshold_minutes: 30
+  min_window_minutes: 15
+  calendar:
+    enabled: false
+    credentials_path: ""
+    token_path: ""
+```
+
+</details>
+
+---
+
+## 💪 Modo Skills
+
+**`dragonclaw start --mode skills_only`**
+
+El modo más ligero. Sin GPU, sin backend RL. DragonClaw envuelve tu LLM detrás de un proxy que inyecta skills relevantes en cada turno y resume automáticamente nuevos skills tras cada conversación.
+
+Los skills son instrucciones cortas en Markdown almacenadas en `~/.dragonclaw/skills/` como archivos `SKILL.md` individuales. La biblioteca crece automáticamente con el uso.
+
+Para precargar el banco de skills integrado (40+ skills para coding, seguridad, tareas agénticas, etc.):
+
+```bash
+cp -r memory_data/skills/* ~/.dragonclaw/skills/
+```
+
+---
+
+## 🔬 Modo RL
+
+**`dragonclaw start --mode rl`**
+
+Todo lo del Modo Skills, más fine-tuning RL continuo a partir de conversaciones en vivo. Cada turno de conversación se tokeniza y se envía como muestra de entrenamiento. Un LLM juez (PRM) puntúa las respuestas de forma asíncrona, y un backend compatible con Tinker (Tinker Cloud o MinT) ejecuta fine-tuning LoRA con hot-swap de pesos.
+
+**Tinker** (por defecto):
+
+```bash
+dragonclaw config rl.backend tinker
+dragonclaw config rl.api_key sk-...
+dragonclaw config rl.model moonshotai/Kimi-K2.5
+dragonclaw config rl.prm_url https://api.openai.com/v1
+dragonclaw config rl.prm_api_key sk-...
+dragonclaw start --mode rl
+```
+
+**MinT**:
+
+```bash
+dragonclaw config rl.backend mint
+dragonclaw config rl.api_key sk-mint-...
+dragonclaw config rl.base_url https://mint.macaron.xin/
+dragonclaw config rl.model Qwen/Qwen3-4B-Instruct-2507
+dragonclaw config rl.prm_url https://api.openai.com/v1
+dragonclaw config rl.prm_api_key sk-...
+dragonclaw start --mode rl
+```
+
+Un LLM evolucionador dedicado también extrae nuevos skills de los episodios fallidos, alimentándolos de vuelta a la biblioteca de skills.
+
+**Rollout programático** (sin TUI de OpenClaw): establece `openclaw_env_data_dir` en un directorio de archivos JSONL de tareas:
+
+```json
+{"task_id": "task_1", "instruction": "Register the webhook at https://example.com/hook"}
+```
+
+### On-Policy Distillation (OPD)
+
+OPD es un complemento opcional para el Modo RL. Destila un modelo profesor más grande en el estudiante on-policy: el estudiante genera respuestas normalmente, y el profesor proporciona log-probabilidades por token en esas mismas respuestas. Una penalización KL guía al estudiante hacia la distribución del profesor.
+
+```bash
+dragonclaw config opd.enabled true
+dragonclaw config opd.teacher_url http://localhost:8082/v1
+dragonclaw config opd.teacher_model Qwen/Qwen3-32B
+dragonclaw config opd.kl_penalty_coef 1.0
+```
+
+El profesor debe servirse detrás de un endpoint `/v1/completions` compatible con OpenAI (p. ej. vLLM, SGLang). OPD puede combinarse con scoring PRM, ambos se ejecutan de forma asíncrona. Consulta `examples/run_conversation_opd.py` y `scripts/run_openclaw_tinker_opd.sh`.
+
+---
+
+## 🧠 Modo MadMax (Por defecto)
+
+**`dragonclaw start`**
+
+Todo lo del Modo RL, más un planificador de meta-aprendizaje que posterga las actualizaciones de pesos a ventanas de inactividad del usuario para que el agente nunca se interrumpa durante el uso activo. Este es el modo por defecto.
+
+El paso de hot-swap de pesos RL pausa el agente durante varios minutos. En lugar de entrenar inmediatamente cuando un batch está lleno (como hace el Modo RL), MadMax espera una ventana apropiada.
+
+Tres condiciones activan una ventana de actualización (cualquiera es suficiente):
+
+- **Horas de sueño**: horario de inicio/fin configurable (p. ej. 23:00 a 07:00)
+- **Inactividad del teclado**: se activa tras N minutos de inactividad
+- **Eventos de Google Calendar**: detecta reuniones para que las actualizaciones se ejecuten mientras estás fuera
+
+```bash
+dragonclaw config scheduler.sleep_start "23:00"
+dragonclaw config scheduler.sleep_end   "07:00"
+dragonclaw config scheduler.idle_threshold_minutes 30
+
+# Opcional: integración con Google Calendar
+pip install -e ".[scheduler]"
+dragonclaw config scheduler.calendar.enabled true
+dragonclaw config scheduler.calendar.credentials_path ~/.dragonclaw/client_secrets.json
+```
+
+Si el usuario regresa durante una actualización, el batch parcial se guarda y se retoma en la siguiente ventana.
+
+Cada `ConversationSample` se etiqueta con una versión `skill_generation`. Cuando la evolución de skills incrementa la generación, el buffer RL se vacía para que solo las muestras post-evolución se usen en las actualizaciones de gradiente (separación de conjuntos support/query MAML).
+
+---
+
+## 📚 Cita
+
+```bibtex
+@misc{xia2026dragonclaw,
+  author       = {Xia, Peng and Chen, Jianwen and Yang, Xinyu and Tu, Haoqin and Han, Siwei and Qiu, Shi and Zheng, Zeyu and Xie, Cihang and Yao, Huaxiu},
+  title        = {DragonClaw: Just Talk --- An Agent That Meta-Learns and Evolves in the Wild},
+  year         = {2026},
+  organization = {GitHub},
+  url          = {https://github.com/aiming-lab/DragonClaw},
+}
+```
+
+---
+
+## 🙏 Agradecimientos
+
+DragonClaw se construye sobre los siguientes proyectos de código abierto:
+
+- [OpenClaw](https://openclaw.ai) - el framework central de agentes.
+- [SkillRL](https://github.com/aiming-lab/SkillRL) - nuestro framework RL aumentado con skills.
+- [Tinker](https://www.thinkingmachines.ai/tinker/) - usado para entrenamiento RL en línea.
+- [MinT](https://github.com/MindLab-Research/mindlab-toolkit) - backend alternativo para entrenamiento RL en línea.
+- [OpenClaw-RL](https://github.com/Gen-Verse/OpenClaw-RL) - inspiración para nuestro diseño RL.
+- [awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) - proporciona la base de nuestro banco de skills.
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).

@@ -1,0 +1,189 @@
+name: DragonClaw Hallucination Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'DragonClaw/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'DragonClaw/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        working-directory: DragonClaw
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install hypothesis
+
+      - name: Run Advanced Suite (T11-T20 — patch verification)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Advanced Suite T11-T20"
+          python tests/test_cascading_hallucinations_advanced.py
+          echo "::endgroup::"
+
+      - name: Run Validation Suite (V1-V10 — stress/red-team)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Validation Suite V1-V10"
+          python tests/test_patch_validation.py
+          echo "::endgroup::"
+
+      - name: Run Multi-Step Suite (V11-V30 — chain logic)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Multi-Step Suite V11-V30"
+          python tests/test_patch_validation_multistep.py
+          echo "::endgroup::"
+
+      - name: Run Property Fuzzing Suite (V31-V40 — Hypothesis)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Property Fuzzing V31-V40"
+          python tests/test_property_fuzzing.py
+          echo "::endgroup::"
+
+      - name: Run Mutation Testing Suite (M1-M10)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Mutation Testing M1-M10"
+          python tests/test_mutation_testing.py
+          echo "::endgroup::"
+
+      - name: Run Orchestration Hallucination Suite (O1-O15)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Orchestration Suite O1-O15"
+          python tests/test_orchestration_hallucinations.py
+          echo "::endgroup::"
+
+      - name: Run 100-Turn Teach→Recall Suite (O16-O25)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::100-Turn Teach→Recall O16-O25"
+          python tests/test_100turn_teach_recall.py
+          echo "::endgroup::"
+
+      - name: Run 500-Turn Stress Suite (O26-O30)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::500-Turn Stress O26-O30"
+          python tests/test_500turn_stress.py
+          echo "::endgroup::"
+
+      - name: Run 5000-Turn Sensitive Data Suite (O31-O35)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::5000-Turn Sensitive Data O31-O35"
+          python tests/test_5000turn_sensitive.py
+          echo "::endgroup::"
+
+      - name: Run Ollama Live Inference Suite (O36-O45)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Ollama Live Inference O36-O45 (simulated in CI)"
+          python tests/test_ollama_live_inference.py
+          echo "::endgroup::"
+
+      - name: Run Multi-Model Cascade Suite (O46-O50)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Multi-Model Cascade O46-O50 (simulated in CI)"
+          python tests/test_multimodel_cascade.py
+          echo "::endgroup::"
+
+      - name: Run Tier 2 Hallucination Suite (O51-O55)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Tier 2 Hallucination O51-O55 (simulated in CI)"
+          python tests/test_tier2_hallucination.py
+          echo "::endgroup::"
+
+      - name: Run Pen Testing Extensions (P1-P5)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Pen Testing Extensions P1-P5 (simulated in CI)"
+          python tests/test_pentest_extensions.py
+          echo "::endgroup::"
+
+      - name: Run Advanced Pen Testing (P6-P10)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Advanced Pen Testing P6-P10 (simulated in CI)"
+          python tests/test_pentest_advanced.py
+          echo "::endgroup::"
+
+      - name: Run Defense Validation (D1-D5)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Defense Validation D1-D5"
+          python tests/test_defense_validation.py
+          echo "::endgroup::"
+
+      - name: Run Tier 3 Defense-Aware (O56-O60)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Tier 3 Defense-Aware O56-O60 (simulated in CI)"
+          python tests/test_tier3_defense_aware.py
+          echo "::endgroup::"
+
+      - name: Run Defense Evasion Pen Testing (P11-P15)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Defense Evasion P11-P15 (simulated in CI)"
+          python tests/test_pentest_defense_evasion.py
+          echo "::endgroup::"
+
+      - name: Run Training Loop Corruption (O61-O65)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Training Loop Corruption O61-O65 (simulated in CI)"
+          python tests/test_training_loop_corruption.py
+          echo "::endgroup::"
+
+      - name: Run Conversation Memory Retrieval (O66-O70)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Conversation Memory O66-O70 (simulated in CI)"
+          python tests/test_conversation_memory.py
+          echo "::endgroup::"
+
+      - name: Run Session Chain Auto-Spawn (O71-O75)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Session Chain O71-O75"
+          python tests/test_session_chain.py
+          echo "::endgroup::"
+
+      - name: Run Session Chain Live (O76-O80, simulated in CI)
+        working-directory: DragonClaw
+        run: |
+          echo "::group::Session Chain Live O76-O80 (simulated in CI)"
+          python tests/test_session_chain_live.py
+          echo "::endgroup::"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-py${{ matrix.python-version }}
+          path: DragonClaw/records/*.json
+          retention-days: 30

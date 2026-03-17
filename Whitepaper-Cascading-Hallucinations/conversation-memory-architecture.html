@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversation-Scoped Memory Retrieval Architecture — MetaClaw</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --cyan: #39d2c0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent); }
+h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--cyan); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--purple); }
+p { margin-bottom: 1rem; }
+.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.card-header { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+
+/* Tier diagram */
+.tier-diagram { display: flex; flex-direction: column; gap: 0; align-items: center; margin: 2rem 0; }
+.tier-box {
+  width: 100%; max-width: 600px; padding: 1.25rem 1.5rem;
+  border: 2px solid var(--border); border-radius: 10px;
+  text-align: center; position: relative;
+}
+.tier-box h4 { margin-bottom: 0.4rem; }
+.tier-box .stats { font-size: 0.85rem; color: var(--text-muted); }
+.tier1 { border-color: var(--green); background: rgba(63,185,80,0.08); }
+.tier1 h4 { color: var(--green); }
+.tier2 { border-color: var(--yellow); background: rgba(210,153,34,0.08); }
+.tier2 h4 { color: var(--yellow); }
+.tier3 { border-color: var(--red); background: rgba(248,81,73,0.08); }
+.tier3 h4 { color: var(--red); }
+.arrow { font-size: 1.5rem; color: var(--text-muted); line-height: 1; padding: 0.3rem 0; }
+.arrow-label { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+th { background: var(--surface); color: var(--accent); text-align: left; padding: 0.6rem 0.8rem; border-bottom: 2px solid var(--border); }
+td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: rgba(88,166,255,0.04); }
+
+/* Status badges */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.badge-ready { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid var(--green); }
+.badge-build { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+.badge-p0 { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid var(--red); }
+.badge-p1 { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+.badge-p2 { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid var(--accent); }
+
+/* Code blocks */
+.code-block {
+  background: #0d1117; border: 1px solid var(--border); border-radius: 6px;
+  padding: 1rem 1.25rem; font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.85rem; overflow-x: auto; margin: 1rem 0; white-space: pre; line-height: 1.5;
+}
+code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; background: rgba(88,166,255,0.1); padding: 1px 5px; border-radius: 3px; }
+
+/* Data flow */
+.flow-step {
+  display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem;
+  padding: 0.75rem 1rem; background: var(--surface); border-radius: 6px; border-left: 3px solid var(--accent);
+}
+.flow-num { font-weight: 700; font-size: 1.1rem; color: var(--accent); min-width: 2rem; }
+.flow-body { flex: 1; }
+.flow-body strong { color: var(--cyan); }
+
+/* Test cards */
+.test-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+}
+.test-id { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; }
+.test-purpose { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+.test-detail { font-size: 0.9rem; }
+
+/* Insight box */
+.insight {
+  background: rgba(188,140,255,0.08); border: 1px solid var(--purple);
+  border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+}
+.insight-title { color: var(--purple); font-weight: 700; margin-bottom: 0.5rem; }
+
+/* Footer */
+.footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>Conversation-Scoped Memory Retrieval</h1>
+<div class="subtitle">
+  MetaClaw Cascading Hallucination Evaluation &mdash; Architecture Report<br>
+  March 2026 &bull; Version 1.0 &mdash; Design Phase &bull; Suites O66-O70
+</div>
+
+<!-- ============================================================ -->
+<h2>1. Problem Statement</h2>
+
+<div class="card">
+  <p>In self-improving AI pipelines, models suffer <strong>catastrophic recall collapse</strong> &mdash; 0% fact retrieval after 60 turns of context dilution (proven by O36). When the model can&rsquo;t recall a previously stated fact, it hallucinates a replacement, and the RL training loop reinforces that hallucination.</p>
+  <p style="margin-bottom:0"><strong>O61 confirmed:</strong> poisoned samples receive advantage +0.949 vs clean -0.949 &mdash; the training loop actively reinforces hallucinations.</p>
+</div>
+
+<div class="insight">
+  <div class="insight-title">Core Question</div>
+  Can we give the model the ability to &ldquo;check its notes&rdquo; &mdash; search its own conversation thread &mdash; before resorting to hallucination?
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Tiered Retrieval Architecture</h2>
+
+<div class="tier-diagram">
+  <div class="tier-box tier1">
+    <h4>TIER 1: Immediate Context Window</h4>
+    <div>Last N turns via raw attention &bull; Latency: 0ms</div>
+    <div class="stats">Limit: ~20K tokens (max_context_tokens) &bull; Accuracy: high recent, 0% beyond window</div>
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="arrow-label">confidence &lt; threshold?</div>
+  <div class="arrow">&darr;</div>
+  <div class="tier-box tier2">
+    <h4>TIER 2: Conversation Memory Index</h4>
+    <div>Full thread &rarr; chunked + embedded &bull; Latency: ~50-200ms</div>
+    <div class="stats">Recency-weighted cosine similarity &bull; Qwen3-Embedding-0.6B</div>
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="arrow-label">still not found?</div>
+  <div class="arrow">&darr;</div>
+  <div class="tier-box tier3">
+    <h4>TIER 3: Defense-Gated Retrieval</h4>
+    <div>Retrieved facts verified by FactVerifier before injection</div>
+    <div class="stats">Prevents retrieving poisoned turns &bull; Blocks self-reinforcing hallucination loops</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h3>2.1 Tier 1 &mdash; Immediate Context Window</h3>
+<div class="card">
+  <p><strong>What:</strong> The standard LLM attention window &mdash; whatever turns fit in <code>max_context_tokens</code> (20K).</p>
+  <p><strong>Strength:</strong> Zero latency, no extra compute, works for recent turns.</p>
+  <p><strong>Weakness:</strong> Catastrophic recall collapse beyond ~40-60 turns.</p>
+  <p style="margin-bottom:0"><strong>Evidence:</strong> O36 (0% recall after 60 turns), O26-O30 (500-turn stress tests).</p>
+</div>
+
+<h3>2.2 Tier 2 &mdash; Conversation Memory Index</h3>
+<div class="card">
+  <p><strong>What:</strong> A semantic index of the full conversation thread, searchable by embedding similarity.</p>
+  <p><strong>How:</strong></p>
+  <ol style="margin-left:1.5rem; margin-bottom:1rem;">
+    <li>Every turn is chunked (1-3 sentences per chunk)</li>
+    <li>Each chunk embedded using <code>Qwen3-Embedding-0.6B</code> (already in SkillManager)</li>
+    <li>Chunks stored with metadata: turn_num, role, timestamp, embedding</li>
+    <li>Query: cosine similarity with <strong>recency weighting</strong></li>
+  </ol>
+  <p><strong>Recency weighting formula:</strong></p>
+  <div class="code-block">score(chunk) = cosine_sim(query, chunk) × weight(turn)
+weight(turn) = base_weight + recency_bonus × (turn_num / total_turns)
+
+Turn   1 of 100: weight ≈ 0.1 (findable but deprioritized)
+Turn 100 of 100: weight ≈ 1.0 (full priority)</div>
+  <p style="margin-bottom:0"><strong>Escalation triggers:</strong> Hedging language in output, FactVerifier can&rsquo;t verify claim, explicit retrieval request.</p>
+</div>
+
+<h3>2.3 Tier 3 &mdash; Defense-Gated Retrieval</h3>
+<div class="card">
+  <p><strong>What:</strong> Safety layer that runs FactVerifier on retrieved chunks before injecting them back into context.</p>
+  <p><strong>Why:</strong> Without this, the model might retrieve its own earlier hallucination and treat it as ground truth &mdash; creating a <strong>self-reinforcing hallucination loop</strong>.</p>
+  <p style="margin-bottom:0"><strong>Process:</strong> Tier 2 returns top-K candidates &rarr; each passed through FactVerifier &rarr; violations flagged/removed &rarr; only verified chunks injected.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Existing Infrastructure</h2>
+
+<h3>3.1 Components Ready</h3>
+<table>
+  <thead><tr><th>Component</th><th>Location</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Embedding model</td><td><code>SkillManager</code> (Qwen3-Embedding-0.6B)</td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>Cosine similarity search</td><td><code>SkillManager._embedding_retrieve()</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>Session isolation</td><td><code>SkillManager.filter_by_session()</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>FactVerifier</td><td><code>metaclaw/defense.py</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>InputSanitizer</td><td><code>metaclaw/defense.py</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>OutputFilter</td><td><code>metaclaw/defense.py</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>DefenseStack</td><td><code>metaclaw/defense.py</code></td><td><span class="badge badge-ready">READY</span></td></tr>
+    <tr><td>Context window config</td><td><code>config.py</code> (max_context_tokens=20K)</td><td><span class="badge badge-ready">READY</span></td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 Components To Build</h3>
+<table>
+  <thead><tr><th>Component</th><th>Description</th><th>Priority</th></tr></thead>
+  <tbody>
+    <tr><td>ConversationMemory class</td><td>Wraps chunking + embedding + retrieval</td><td><span class="badge badge-p0">P0</span></td></tr>
+    <tr><td>Conversation chunker</td><td>Splits turns into embeddable chunks</td><td><span class="badge badge-p0">P0</span></td></tr>
+    <tr><td>Recency weighting</td><td>Ascending weight formula for similarity</td><td><span class="badge badge-p0">P0</span></td></tr>
+    <tr><td>Confidence thresholding</td><td>Decides Tier 1 &rarr; Tier 2 escalation</td><td><span class="badge badge-p1">P1</span></td></tr>
+    <tr><td>Defense-gated retrieval</td><td>FactVerifier on retrieved chunks</td><td><span class="badge badge-p1">P1</span></td></tr>
+    <tr><td>Escalation timeout</td><td>Configurable ms timeout per tier</td><td><span class="badge badge-p2">P2</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>4. ConversationMemory Class Design</h2>
+
+<h3>4.1 API Surface</h3>
+<div class="code-block">class ConversationMemory:
+    """Conversation-scoped memory with tiered retrieval."""
+
+    def __init__(self, embedding_model_path, fact_verifier,
+                 recency_base=0.1, recency_bonus=0.9,
+                 confidence_threshold=0.6, chunk_max_sentences=3): ...
+
+    def ingest_turn(self, role, content, turn_num) -> int:
+        """Add a turn to the memory index. Returns chunk count."""
+
+    def retrieve(self, query, top_k=3, tier="auto",
+                 defense_gate=True) -> list[dict]:
+        """Tiered retrieval: immediate → weighted search → defense-gated.
+        Returns [{chunk_text, turn_num, role, score, tier, verified}]"""
+
+    def get_confidence(self, query, context_turns) -> float:
+        """Score whether context window contains the answer (0.0-1.0)."""
+
+    def get_stats(self) -> dict:
+        """Return {total_turns, total_chunks, retrievals,
+                   tier1_hits, tier2_hits, tier3_blocks}"""</div>
+
+<h3>4.2 Data Flow Example</h3>
+
+<div class="flow-step">
+  <div class="flow-num">1</div>
+  <div class="flow-body">
+    <strong>Tier 1 Check:</strong> Scan last 10 turns for &ldquo;capital&rdquo; mention.<br>
+    <code>get_confidence()</code> returns 0.3 (below 0.6 threshold) &rarr; <strong>ESCALATE</strong>
+  </div>
+</div>
+<div class="flow-step">
+  <div class="flow-num">2</div>
+  <div class="flow-body">
+    <strong>Tier 2 Search:</strong> Embed query &ldquo;capital we discussed earlier&rdquo;<br>
+    Cosine similarity against all chunks &rarr; Top: Turn 5, &ldquo;The capital of France is Paris&rdquo; (score: 0.87)
+  </div>
+</div>
+<div class="flow-step">
+  <div class="flow-num">3</div>
+  <div class="flow-body">
+    <strong>Tier 3 Gate:</strong> FactVerifier checks &ldquo;capital of France&rdquo; &rarr; &ldquo;Paris&rdquo; &check;<br>
+    Chunk passes &rarr; <strong>INJECT</strong>: <code>[Retrieved from turn 5: The capital of France is Paris]</code>
+  </div>
+</div>
+<div class="flow-step">
+  <div class="flow-num">4</div>
+  <div class="flow-body">
+    <strong>Result:</strong> Model responds with verified fact instead of hallucinating.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>5. O66-O70 Test Suite</h2>
+
+<div class="test-card">
+  <div class="test-id" style="color:var(--green)">O66: Immediate Recall Window Mapping</div>
+  <div class="test-purpose">Establish Tier 1 baseline — at what turn distance does raw context recall fail?</div>
+  <div class="test-detail">
+    <p>Teach a fact at turn T, insert N distractor turns, ask for recall at T+N. Map decay curve: N=5, 10, 20, 40, 60, 80, 100.</p>
+    <p style="margin-bottom:0"><strong>Expected:</strong> ~100% at N=5, ~0% at N=60+ (consistent with O36).</p>
+  </div>
+</div>
+
+<div class="test-card">
+  <div class="test-id" style="color:var(--yellow)">O67: Recency-Weighted Retrieval</div>
+  <div class="test-purpose">Can Tier 2 recover facts that Tier 1 loses?</div>
+  <div class="test-detail">
+    <p>Teach 5 facts at turns 5, 15, 25, 35, 45. Dilute with 50 distractors (100 total). Compare raw context vs Tier 2.</p>
+    <p style="margin-bottom:0"><strong>Expected:</strong> Raw context ~20%, Tier 2 &gt;80%.</p>
+  </div>
+</div>
+
+<div class="test-card">
+  <div class="test-id" style="color:var(--cyan)">O68: Confidence Threshold Calibration</div>
+  <div class="test-purpose">When should the system escalate from Tier 1 to Tier 2?</div>
+  <div class="test-detail">
+    <p>20 queries: 10 answerable from immediate context, 10 requiring full search. Sweep thresholds 0.3-0.9. Find optimal balance of latency vs recall.</p>
+    <p style="margin-bottom:0"><strong>Expected:</strong> Optimal threshold ~0.5-0.6.</p>
+  </div>
+</div>
+
+<div class="test-card">
+  <div class="test-id" style="color:var(--red)">O69: Defense-Gated Retrieval</div>
+  <div class="test-purpose">Does Tier 3 prevent retrieval of poisoned conversation turns?</div>
+  <div class="test-detail">
+    <p>50-turn conversation: 5 poisoned + 5 truthful turns on same topics. Query with gate ON vs OFF.</p>
+    <p style="margin-bottom:0"><strong>Expected:</strong> 0% poison retrieval gated, &gt;0% ungated.</p>
+  </div>
+</div>
+
+<div class="test-card">
+  <div class="test-id" style="color:var(--purple)">O70: End-to-End Tiered Pipeline</div>
+  <div class="test-purpose">Full system under combined adversarial + dilution pressure.</div>
+  <div class="test-detail">
+    <p>100 turns: 10 facts, 40 distractors, 5 poisons, 5 retrieval queries. Measure tier routing, accuracy, poison leakage, latency.</p>
+    <p style="margin-bottom:0"><strong>Pass criteria:</strong> &gt;80% correct retrieval, 0% poison leakage.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>6. Relationship to Whitepaper Thesis</h2>
+
+<div class="insight">
+  <div class="insight-title">The Hallucination Cascade Chain</div>
+  <ol style="margin-left:1.5rem;">
+    <li><strong>O36 proved:</strong> Models lose recall after 60 turns &rarr; they hallucinate replacements</li>
+    <li><strong>O61 proved:</strong> Hallucinated replacements get +0.949 RL advantages &rarr; training loop reinforces them</li>
+    <li><strong>ConversationMemory solves:</strong> Full-thread access &rarr; recall doesn&rsquo;t collapse &rarr; no hallucination trigger &rarr; training loop stays clean</li>
+  </ol>
+</div>
+
+<div class="insight">
+  <div class="insight-title">Key Architectural Insight</div>
+  <p style="margin-bottom:0">The same defense stack that protects the training loop (O61-O65) also protects the retrieval loop (O66-O70). This <strong>unifies the defensive architecture</strong> across both inference-time and training-time failure modes.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>7. Implementation Dependencies</h2>
+
+<table>
+  <thead><tr><th>Dependency</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><code>sentence-transformers</code></td><td><span class="badge badge-ready">READY</span></td><td>Already in requirements (SkillManager)</td></tr>
+    <tr><td><code>numpy</code></td><td><span class="badge badge-ready">READY</span></td><td>Already in requirements</td></tr>
+    <tr><td><code>metaclaw/defense.py</code></td><td><span class="badge badge-ready">READY</span></td><td>FactVerifier, DefenseStack</td></tr>
+    <tr><td><code>metaclaw/skill_manager.py</code></td><td><span class="badge badge-ready">READY</span></td><td>Embedding model loading pattern</td></tr>
+    <tr><td><code>metaclaw/config.py</code></td><td><span class="badge badge-ready">READY</span></td><td>Configuration pattern</td></tr>
+  </tbody>
+</table>
+<p style="margin-top:1rem;color:var(--green);font-weight:600;">No new external dependencies required.</p>
+
+<!-- ============================================================ -->
+<div class="footer">
+  MetaClaw &bull; 145 tests, 19 suites &bull; O66-O70 Conversation Memory Retrieval (Design Phase)<br>
+  <a href="https://github.com/aimarketingflow/llm-hallucinations-evaluation-meta-claw">github.com/aimarketingflow/llm-hallucinations-evaluation-meta-claw</a>
+</div>
+
+</body>
+</html>
